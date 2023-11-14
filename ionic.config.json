@@ -1,0 +1,8 @@
+{
+  "name": "primeskills pwa",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite",
+  "id": "b5e71bcf"
+}
