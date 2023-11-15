@@ -260,7 +260,7 @@ self.addEventListener('push', event => {
     };
   
     event.waitUntil(
-      self.registration.showNotification('Notification Title', options)
+      self.registration.showNotification('MW test', options)
     );
   });
 
