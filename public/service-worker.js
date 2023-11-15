@@ -26,8 +26,6 @@
 
 
 
-importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js");
 
 /* eslint-disable quotes, comma-spacing */
 var PrecacheConfig = [["/bower_components/webcomponentsjs/webcomponents-lite.min.js","f04ed23700daeb36f637bfe095960659"],["/index.html","6018d0295f8faf690e2878af152ecbbc"],["/manifest.json","2eefc15db4b58758cddc0d666e27d399"],["/src/my-app.html","7e5dee7784534c0ccc50f8ec71bccd3f"],["/src/my-view1.html","4ccb8d9cd5b87a92973cc7704873b65f"],["/src/my-view2.html","7e00f1613408e109e6d26853846c8467"],["/src/my-view3.html","1971572d82bd5c7e058dce75bdd068df"],["/src/my-view404.html","858fecebfa5de274e8d3f7ba905d599e"]];
@@ -37,14 +35,10 @@ var CacheNamePrefix = 'sw-precache-v1--' + (self.registration ? self.registratio
 
 var IgnoreUrlParametersMatching = [/^utm_/];
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAeCH1Sas-HEwZBtQcgsY9ZrgigHhJjm2w",
-  authDomain: "ion-2-d9afa.firebaseapp.com",
-  projectId: "ion-2-d9afa",
-  storageBucket: "ion-2-d9afa.appspot.com",
-  messagingSenderId: "554990515597",
-  appId: "1:554990515597:web:62d1b4969d5c84ea94f9c4"
-};
+
+// import { initializeApp } from 'firebase/app';
+// import { getMessaging, getToken } from 'firebase/messaging';
+
 
 
 var addDirectoryIndex = function (originalUrl, index) {
@@ -281,17 +275,47 @@ self.addEventListener('push', event => {
   });
 
 
-firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  console.log("Background Message received:", payload);
+  importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js");
+  importScripts("https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js");
 
-  const notificationOptions = {
-    body: 'hi body',
-    // icon: payload.notification.icon,
+  const firebaseConfig = {
+    apiKey: "AIzaSyAeCH1Sas-HEwZBtQcgsY9ZrgigHhJjm2w",
+    authDomain: "ion-2-d9afa.firebaseapp.com",
+    projectId: "ion-2-d9afa",
+    storageBucket: "ion-2-d9afa.appspot.com",
+    messagingSenderId: "554990515597",
+    appId: "1:554990515597:web:62d1b4969d5c84ea94f9c4"
   };
+  
+  
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+  
+  console.log('Before getToken');
 
-  self.registration.showNotification('title', notificationOptions);
-});
-
+  messaging.getToken().then((currentToken) => {
+    console.log('Inside getToken');
+    if (currentToken) {
+      console.log('FCM Token:', currentToken);
+    } else {
+      console.log('No FCM token available.');
+    }
+  }).catch((err) => {
+    console.error('Error getting FCM token:', err);
+  });
+  
+  console.log('After getToken');
+  
+  
+  // Handle background message
+  messaging.onBackgroundMessage((payload) => {
+    console.log("Background Message received:", payload);
+  
+    const notificationOptions = {
+      body: 'hi body',
+      // icon: payload.notification.icon,
+    };
+  
+    self.registration.showNotification('title', notificationOptions);
+  }); 
