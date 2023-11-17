@@ -12,15 +12,23 @@
         </ion-toolbar>
       </ion-header>
 
-      <ExploreContainer name="Tab 1 page" />
-      <ion-button @click="requestNotificationPermission()"
-        >Request Notification Permission</ion-button
-      >
-      <ion-button @click="testNotification()">send notification</ion-button>
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Notification Title</ion-label>
+          <ion-input v-model="title" placeholder="Enter title"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Notification Body</ion-label>
+          <ion-input v-model="body" placeholder="Enter body"></ion-input>
+        </ion-item>
+      </ion-list>
+
+    
+      <ion-button @click="sendNotification()">Send Notification</ion-button>
     </ion-content>
   </ion-page>
 </template>
-
 <script setup lang="ts">
 import {
   IonPage,
@@ -29,6 +37,10 @@ import {
   IonTitle,
   IonContent,
   IonButton,
+  IonLabel,
+  IonList,
+  IonInput,
+  IonItem
 } from "@ionic/vue";
 import ExploreContainer from "@/components/ExploreContainer.vue";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
@@ -64,15 +76,6 @@ const tokens = vueRef<string[]>([]);
 const database = firebaseRef(getDatabase(), 'tokens'); 
 
 
-const isTokenAlreadySaved = async (token: any) => {
-  const tokensRef = firebaseRef(getDatabase(), 'tokens');
-  const tokenQuery = query(tokensRef, equalTo('token', token));
-  
-
-  const snapshot = await get(tokenQuery);
-
-  return snapshot.exists();
-};
 
 const saveTokenToDatabase = async (token: any) => {
   const tokensRef = firebaseRef(getDatabase(), 'tokens');
@@ -117,9 +120,13 @@ watch(tokens, (newTokens) => {
 
 onMounted(() => {
   getTokenAsync();
+  requestNotificationPermission();
 })
 
-const testNotification = async () => {
+const title = vueRef('');
+const body = vueRef('');
+
+const sendNotification = async () => {
 
   const myHeaders = new Headers();
   myHeaders.append(
@@ -131,8 +138,8 @@ const testNotification = async () => {
   const raw = JSON.stringify({
     registration_ids: tokens.value,
     notification: {
-      body: "halo",
-      title: "hi title",
+      body: body.value,
+      title: title.value
     },
   });
 

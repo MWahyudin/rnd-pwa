@@ -264,15 +264,18 @@ self.addEventListener('fetch', function(event) {
 });
 
 self.addEventListener('push', event => {
-    const options = {
-      body: event.data.text(),
-    //   icon: 'path/to/icon.png',
-    };
-  
-    event.waitUntil(
-      self.registration.showNotification('MW test notification', options)
-    );
-  });
+  const payload = event.data.json();
+
+  const options = {
+    body: payload.notification.body,
+    icon: './logo.png', // Add your icon path here
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(payload.notification.title, options)
+  );
+});
+
 
 
 
